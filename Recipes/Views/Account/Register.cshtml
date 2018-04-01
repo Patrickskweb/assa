@@ -1,0 +1,74 @@
+﻿@model Recipes.Models.RegisterViewModel
+@{
+    ViewBag.Title = "Register";
+}
+
+<h2>@ViewBag.Title.</h2>
+
+@using (Html.BeginForm("Register", "Account", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
+{
+    @Html.AntiForgeryToken()
+    <h4>Create a new account.</h4>
+    <hr />
+    @Html.ValidationSummary("", new { @class = "text-danger" })
+    <div class="form-group">
+        @Html.LabelFor(m => m.Email, new { @class = "email" })
+        <div class="col-md-10">
+            @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+        </div>
+        <span id="message"></span>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.Password, new { @class = "" })
+        <div class="col-md-10">
+            @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        @Html.LabelFor(m => m.ConfirmPassword, new { @class = "" })
+        <div class="col-md-10">
+            @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-md-offset-2 col-md-10">
+            <input type="submit" class="btn btn-default" value="Register" />
+        </div>
+    </div>
+}
+<input id="btnCheck" type="button" value="Show Availability" onclick="CheckAvailability()" />
+
+@section Scripts {
+
+<script type="text/javascript">
+    function CheckAvailability() {
+        var email = $(".email").val();
+        $.ajax({
+            type: "POST",
+            url: "/Account/CheckEmail",
+            data: email,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                var message = $("#message");
+                if (response == false) {
+                    //Email available.
+                    message.css("color", "green");
+                    message.html("Email is available");
+                }
+                else {
+                    //Email not available.
+                    message.css("color", "red");
+                    message.html("Email is NOT available");
+                }
+            }
+        });
+    };
+
+    function ClearMessage() {
+        $("#message").html("");
+    };
+</script>
+
+    @Scripts.Render("~/bundles/jqueryval")
+}
